@@ -527,13 +527,71 @@ latitude,longitude,u,v,sst,date
       .replace(/"/g, '&quot;');
   }
 
+  /**
+   * Directly load and validate the authentic default NASA stream without needing UI DOM elements.
+   * @param {'nightlights'|'ocean'} datasetType
+   * @returns {Promise<{ rows: Object[], schema: Object, fieldMap: Object, statsMap: Object, fileName: string }>}
+   */
+  async function loadDefaultStream(datasetType) {
+    const text = datasetType === 'nightlights' ? _EMBEDDED_NIGHTLIGHTS_CSV : _EMBEDDED_OCEAN_CSV;
+    const fileName = datasetType === 'nightlights'
+      ? 'nasa_blackmarble_nightlights_2012_2023.csv'
+      : 'nasa_oscar_ocean_currents_sst.csv';
+
+    const rows = parseCSV(text, ',');
+    const validator = (typeof window !== 'undefined' && window.DataValidator) || DataValidator;
+    const schema = validator.inspect(rows);
+    if (!schema.ok) return null;
+
+    let matchResult;
+    if (datasetType === 'nightlights') {
+      matchResult = validator.matchNightLights(schema);
+    } else {
+      matchResult = validator.matchOcean(schema);
+    }
+    if (!matchResult.match) return null;
+
+    const fieldMap = { ...matchResult.suggestedFields };
+    if (datasetType === 'ocean' && fieldMap.u && fieldMap.v && !fieldMap.vel) {
+      for (const row of rows) {
+        const u = Number(row[fieldMap.u]);
+        const v = Number(row[fieldMap.v]);
+        row._calc_velocity = (!isNaN(u) && !isNaN(v)) ? Math.sqrt(u * u + v * v) : null;
+      }
+      fieldMap.vel = '_calc_velocity';
+    }
+
+    const normalizer = (typeof window !== 'undefined' && window.DataNormalizer) || DataNormalizer;
+    const fieldsToNorm = [];
+    if (datasetType === 'nightlights') {
+      if (fieldMap.radiance) fieldsToNorm.push(fieldMap.radiance);
+    } else {
+      if (fieldMap.u)   fieldsToNorm.push(fieldMap.u);
+      if (fieldMap.v)   fieldsToNorm.push(fieldMap.v);
+      if (fieldMap.sst) fieldsToNorm.push(fieldMap.sst);
+      if (fieldMap.vel) fieldsToNorm.push(fieldMap.vel);
+    }
+
+    const statsMap = {};
+    for (const f of fieldsToNorm) {
+      const stats = normalizer.computeStats(rows, f);
+      statsMap[f] = stats;
+      for (const row of rows) {
+        row[`_norm_${f}`] = normalizer.normalizeValue(row[f], stats);
+      }
+    }
+
+    return { rows, schema, fieldMap, statsMap, fileName };
+  }
+
   return {
     parseFile,
     parseCSV,
     parseJSON,
     parseGeoJSON,
     processUpload,
-    loadSampleDataset
+    loadSampleDataset,
+    loadDefaultStream
   };
 })();
 

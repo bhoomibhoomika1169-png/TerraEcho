@@ -60,7 +60,28 @@ export const TerraApp = (() => {
       window.__TERRA_ECHO_INITIALIZED__ = true;
     }
 
+    // Auto-initialize authentic NASA streams so the site is instantly alive on first load
+    _autoLoadInitialStreams();
+
     console.log('%c[TerraEcho]%c Earth’s Living Soundscape Initialized · NASA Space Apps 2026', 'color:#00e5ff;font-weight:bold;', 'color:#8aaccc;');
+  }
+
+  async function _autoLoadInitialStreams() {
+    try {
+      const adapter = (typeof window !== 'undefined' && window.DatasetAdapter) || DatasetAdapter;
+      if (!adapter || !adapter.loadDefaultStream) return;
+
+      const nl = await adapter.loadDefaultStream('nightlights');
+      if (nl) onDatasetLoaded('nightlights', nl);
+
+      const oc = await adapter.loadDefaultStream('ocean');
+      if (oc) onDatasetLoaded('ocean', oc);
+
+      playerUpdateDatasetStatus();
+      playerLoadSelectedDataset();
+    } catch (err) {
+      console.warn('[TerraEcho] Auto-stream initialization info:', err);
+    }
   }
 
   function _initCanvases() {
@@ -168,6 +189,27 @@ export const TerraApp = (() => {
           const filtered = result.rows.filter(r => Number(r[result.fieldMap.time]) === yr);
           EarthViewer.setExplorerDataset(datasetType, filtered, result.fieldMap, result.statsMap);
         });
+      }
+    }
+
+    // Update experience badge to verified
+    const prefix = datasetType === 'nightlights' ? 'nl' : 'oc';
+    const badge = document.getElementById(`${prefix}-dataset-badge`);
+    if (badge) {
+      badge.className = 'data-badge data-badge--verified';
+      badge.innerHTML = '<span class="badge-dot-sm" aria-hidden="true"></span> Verified NASA dataset';
+    }
+
+    // Populate upload validation card
+    const report = document.getElementById(`${prefix}-validation-report`);
+    const status = document.getElementById(`${prefix}-validation-status`);
+    const details = document.getElementById(`${prefix}-validation-details`);
+    if (report && status && details && result.schema) {
+      const validator = (typeof window !== 'undefined' && window.DataValidator) || DataValidator;
+      if (validator && validator.renderMetadataCardHTML) {
+        status.innerHTML = validator.renderMetadataCardHTML(datasetType, result.schema, result.fileName, result.fieldMap, result.rows);
+        details.innerHTML = validator.renderSummaryHTML(result.schema);
+        report.hidden = false;
       }
     }
 
@@ -330,7 +372,10 @@ export const TerraApp = (() => {
 
   function _ensureSequenceLoaded() {
     if (AudioEngine.getSequenceLen() === 0) {
-      _setPlayerStatus('No sequence loaded. Click "Activate Dataset" first.');
+      playerLoadSelectedDataset();
+    }
+    if (AudioEngine.getSequenceLen() === 0) {
+      _setPlayerStatus('No sequence loaded. Select a verified dataset first.');
       return false;
     }
     return true;
