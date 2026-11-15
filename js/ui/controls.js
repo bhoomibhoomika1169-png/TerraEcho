@@ -283,7 +283,10 @@ export const Controls = (() => {
 
     document.querySelectorAll('input[name="player-dataset"]').forEach(r => {
       r.addEventListener('change', () => {
-        if (window.TerraApp) window.TerraApp.playerUpdateDatasetStatus();
+        if (window.TerraApp) {
+          window.TerraApp.playerUpdateDatasetStatus();
+          window.TerraApp.playerLoadSelectedDataset();
+        }
       });
     });
   }

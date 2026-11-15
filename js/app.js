@@ -77,6 +77,17 @@ export const TerraApp = (() => {
       const oc = await adapter.loadDefaultStream('ocean');
       if (oc) onDatasetLoaded('ocean', oc);
 
+      const expRadio = document.querySelector('input[name="explorer-dataset"]:checked');
+      const expType = expRadio ? expRadio.value : 'nightlights';
+      const expData = state.datasets[expType];
+      if (expData && typeof EarthViewer !== 'undefined' && EarthViewer.setExplorerDataset) {
+        EarthViewer.setExplorerDataset(expType, expData.rows, expData.fieldMap, expData.statsMap);
+        const expStatus = document.getElementById('explorer-dataset-status');
+        if (expStatus) {
+          expStatus.innerHTML = `<span class="status-dot status-ok" aria-hidden="true"></span> NASA ${expType === 'nightlights' ? 'Black Marble' : 'OSCAR'} dataset active`;
+        }
+      }
+
       playerUpdateDatasetStatus();
       playerLoadSelectedDataset();
     } catch (err) {
@@ -345,7 +356,7 @@ export const TerraApp = (() => {
     const noteEl = document.getElementById('player-note');
     if (noteEl) {
       if (selectedType && state.datasets[selectedType]) {
-        noteEl.textContent = `✅ ${selectedType === 'nightlights' ? 'Night Lights' : 'Ocean'} dataset verified. Click "Activate Dataset" then Play.`;
+        noteEl.textContent = `✅ ${selectedType === 'nightlights' ? 'Night Lights' : 'Ocean'} dataset verified. Click ▶ Play to listen.`;
         noteEl.style.color = 'var(--status-ok)';
       } else {
         noteEl.textContent = 'Upload and validate a NASA dataset in the Upload section to enable playback.';
