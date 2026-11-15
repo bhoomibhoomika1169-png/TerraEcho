@@ -1,0 +1,249 @@
+/* ═══════════════════════════════════════════════════════════════════
+   TerraEcho – responsive.css
+   Breakpoints and mobile styles
+══════════════════════════════════════════════════════════════════════ */
+
+/* ── 1200px and below ──────────────────────────────────────────── */
+@media (max-width: 1200px) {
+  .home-hero {
+    gap: 32px;
+  }
+  .globe-wrapper {
+    width: 400px;
+    height: 400px;
+  }
+  .home-globe-canvas,
+  .home-globe-fallback {
+    width: 400px;
+    height: 400px;
+  }
+  .team-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+  .workflow {
+    flex-wrap: wrap;
+  }
+  .workflow-arrow {
+    display: none;
+  }
+  .workflow-step {
+    min-width: calc(33% - 8px);
+    flex: none;
+  }
+}
+
+/* ── 1024px and below ──────────────────────────────────────────── */
+@media (max-width: 1024px) {
+  .explorer-layout,
+  .experience-layout,
+  .player-layout {
+    grid-template-columns: 1fr;
+  }
+  .explorer-sidebar,
+  .experience-sidebar,
+  .player-sidebar {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 16px;
+  }
+  .sonif-details {
+    grid-template-columns: 1fr;
+  }
+  .about-mission {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* ── 900px and below ───────────────────────────────────────────── */
+@media (max-width: 900px) {
+  .home-hero {
+    grid-template-columns: 1fr;
+    text-align: center;
+    min-height: auto;
+    padding-top: 20px;
+  }
+  .hero-text {
+    max-width: 100%;
+    order: 1;
+  }
+  .hero-globe-container {
+    order: 2;
+  }
+  .hero-actions {
+    justify-content: center;
+  }
+  .hero-subtitle { margin: 0 auto 36px; }
+
+  .globe-wrapper {
+    width: 320px;
+    height: 320px;
+  }
+  .home-globe-canvas,
+  .home-globe-fallback {
+    width: 320px;
+    height: 320px;
+  }
+  .hero-data-badge {
+    display: none;
+  }
+
+  .dataset-cards {
+    grid-template-columns: 1fr;
+  }
+
+  .stats-row {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .source-meta {
+    grid-template-columns: 1fr;
+  }
+
+  .upload-layout {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* ── 768px and below ───────────────────────────────────────────── */
+@media (max-width: 768px) {
+  :root { --nav-h: 56px; }
+
+  /* Nav mobile */
+  .nav {
+    padding: 0 16px;
+    flex-wrap: wrap;
+    height: auto;
+    min-height: var(--nav-h);
+  }
+  .nav-hamburger {
+    display: flex;
+  }
+  .nav-links {
+    display: none;
+    flex-direction: column;
+    align-items: flex-start;
+    width: 100%;
+    padding: 12px 0 16px;
+    gap: 2px;
+    border-top: 1px solid var(--border-glass);
+  }
+  .nav-links.open {
+    display: flex;
+  }
+  .nav-link {
+    width: 100%;
+    padding: 10px 12px;
+    font-size: 0.95rem;
+  }
+
+  .section {
+    padding: calc(var(--nav-h) + 24px) 16px 48px;
+  }
+
+  .section--home {
+    padding-left: 0;
+    padding-right: 0;
+  }
+  .home-content { padding: 0 16px; }
+
+  .hero-title { font-size: 2.4rem; }
+  .hero-subtitle { font-size: 0.95rem; }
+
+  .mission-block { padding: 24px 20px; }
+  .mission-pillars { gap: 16px; }
+
+  .team-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .about-mission { padding: 24px; }
+
+  .player-main { padding: 20px; }
+  .player-controls { gap: 8px; }
+  .player-btn { width: 38px; height: 38px; }
+  .player-btn--main { width: 52px; height: 52px; }
+
+  .explorer-sidebar,
+  .experience-sidebar,
+  .player-sidebar {
+    grid-template-columns: 1fr;
+  }
+
+  .workflow-step {
+    min-width: calc(50% - 8px);
+  }
+
+  .footer-content {
+    flex-direction: column;
+    text-align: center;
+  }
+  .footer-meta { text-align: center; }
+  .footer-nav { justify-content: center; }
+
+  .source-header {
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .nasa-badge-content { flex-direction: column; }
+}
+
+/* ── 480px and below ───────────────────────────────────────────── */
+@media (max-width: 480px) {
+  .hero-title { font-size: 2rem; }
+  .section-title { font-size: 1.75rem; }
+
+  .hero-actions {
+    flex-direction: column;
+    align-items: center;
+  }
+  .btn { width: 100%; justify-content: center; }
+
+  .globe-wrapper {
+    width: 280px;
+    height: 280px;
+  }
+  .home-globe-canvas,
+  .home-globe-fallback {
+    width: 260px;
+    height: 260px;
+  }
+
+  .team-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .stats-row {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .workflow-step {
+    min-width: 100%;
+  }
+
+  .player-secondary-controls {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 12px;
+  }
+  .volume-control { width: 100%; }
+
+  .sonif-formula { padding: 10px; }
+  .formula-eq { font-size: 0.75rem; }
+}
+
+/* ── Print ─────────────────────────────────────────────────────── */
+@media print {
+  .nav, .footer, .btn, canvas { display: none; }
+  .section { padding: 20px; min-height: auto; }
+  .glass-card { border: 1px solid #ccc; box-shadow: none; }
+  body { background: #fff; color: #000; }
+}
+
+/* ── Reduced Motion ─────────────────────────────────────────────── */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+  }
+}

@@ -1,0 +1,1213 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="TerraEcho – Transform authentic NASA Earth science observations into interactive visual experiences and meaningful sounds. NASA Space Apps Challenge 2026." />
+  <meta name="keywords" content="NASA, Earth science, sonification, night lights, ocean currents, space apps challenge, data visualization" />
+  <meta name="author" content="TerraEcho Team" />
+  <title>TerraEcho – Earth's Living Soundscape | NASA Space Apps 2026</title>
+
+  <!-- Favicon -->
+  <link rel="icon" type="image/x-icon" href="favicon.ico" />
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 36 36'><circle cx='18' cy='18' r='16' fill='%23080c14' stroke='%2300e5ff' stroke-width='2'/><ellipse cx='18' cy='18' rx='7' ry='16' fill='none' stroke='%239b59ff' stroke-width='1.5'/><circle cx='18' cy='18' r='3.5' fill='%2300e5ff'/></svg>" />
+
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Space+Grotesk:wght@400;500;600;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet" />
+
+  <!-- CSS -->
+  <link rel="stylesheet" href="css/main.css" />
+  <link rel="stylesheet" href="css/dashboard.css" />
+  <link rel="stylesheet" href="css/visualizations.css" />
+  <link rel="stylesheet" href="css/audio.css" />
+  <link rel="stylesheet" href="css/responsive.css" />
+</head>
+<body>
+
+  <!-- ═══════════════════════════════════════════════════════
+       NAVIGATION
+  ══════════════════════════════════════════════════════════ -->
+  <nav id="main-nav" class="nav" role="navigation" aria-label="Main navigation">
+    <div class="nav-brand">
+      <div class="nav-logo-icon" aria-hidden="true">
+        <svg viewBox="0 0 36 36" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <circle cx="18" cy="18" r="16" stroke="url(#globe-grad)" stroke-width="2"/>
+          <ellipse cx="18" cy="18" rx="7" ry="16" stroke="url(#globe-grad)" stroke-width="1.2"/>
+          <line x1="2" y1="18" x2="34" y2="18" stroke="url(#globe-grad)" stroke-width="1.2"/>
+          <circle cx="18" cy="18" r="3" fill="url(#globe-grad)"/>
+          <defs>
+            <linearGradient id="globe-grad" x1="2" y1="2" x2="34" y2="34">
+              <stop stop-color="#00e5ff"/>
+              <stop offset="1" stop-color="#9b59ff"/>
+            </linearGradient>
+          </defs>
+        </svg>
+      </div>
+      <span class="nav-brand-text">TerraEcho</span>
+    </div>
+
+    <button class="nav-hamburger" id="nav-hamburger" aria-label="Toggle menu" aria-expanded="false">
+      <span></span><span></span><span></span>
+    </button>
+
+    <ul class="nav-links" id="nav-links" role="list">
+      <li><a href="#home"       class="nav-link active" data-section="home">Home</a></li>
+      <li><a href="#explorer"   class="nav-link" data-section="explorer">Explorer</a></li>
+      <li><a href="#nightlights" class="nav-link" data-section="nightlights">Night Lights</a></li>
+      <li><a href="#ocean"      class="nav-link" data-section="ocean">Ocean</a></li>
+      <li><a href="#upload"     class="nav-link" data-section="upload">Upload Data</a></li>
+      <li><a href="#player"     class="nav-link" data-section="player">Sound Player</a></li>
+      <li><a href="#science"    class="nav-link" data-section="science">Science</a></li>
+      <li><a href="#sources"    class="nav-link" data-section="sources">Sources</a></li>
+      <li><a href="#about"      class="nav-link" data-section="about">About</a></li>
+    </ul>
+  </nav>
+
+  <!-- Local Server Protocol Notice -->
+  <aside id="protocol-notice" class="protocol-notice" hidden aria-label="Local server notice">
+    <div class="protocol-notice-content">
+      <span>🚀 <strong>Local File Notice:</strong> For ES6 module support across all browsers, run a local web server: <code>npx serve</code> or <code>python -m http.server</code></span>
+      <button class="protocol-notice-close" onclick="this.closest('#protocol-notice').hidden=true" aria-label="Dismiss notice">✕</button>
+    </div>
+  </aside>
+
+  <!-- ═══════════════════════════════════════════════════════
+       SECTION A: HOME
+  ══════════════════════════════════════════════════════════ -->
+  <section id="home" class="section section--home active" aria-label="Home">
+    <!-- Star field canvas -->
+    <canvas id="star-canvas" class="star-canvas" aria-hidden="true"></canvas>
+
+    <div class="home-content">
+      <div class="home-hero">
+        <div class="hero-text">
+          <div class="hero-badge">
+            <span class="badge-dot" aria-hidden="true"></span>
+            NASA Space Apps Challenge 2026
+          </div>
+          <h1 class="hero-title">
+            Listen to the<br/>
+            <span class="gradient-text">Changing Earth.</span>
+          </h1>
+          <p class="hero-subtitle">
+            TerraEcho transforms authentic NASA Earth science observations into interactive
+            visual experiences and meaningful sounds — connecting you to our living planet
+            through data, sight, and sound.
+          </p>
+          <div class="hero-actions">
+            <button id="btn-explore-earth" class="btn btn-primary" data-nav="explorer">
+              <svg class="btn-icon" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+                <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm.75-11.25a.75.75 0 00-1.5 0v4.69L7.3 9.5a.75.75 0 00-1.1 1.02l3.25 3.5a.75.75 0 001.1 0l3.25-3.5a.75.75 0 10-1.1-1.02l-1.95 2.1V6.75z" clip-rule="evenodd"/>
+              </svg>
+              Explore Earth
+            </button>
+            <button id="btn-listen-earth" class="btn btn-secondary" data-nav="player">
+              <svg class="btn-icon" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+                <path d="M6.3 2.841A1.5 1.5 0 004 4.11V15.89a1.5 1.5 0 002.3 1.269l9.344-5.89a1.5 1.5 0 000-2.538L6.3 2.84z"/>
+              </svg>
+              Listen to Earth
+            </button>
+          </div>
+
+          <!-- Live System Status Readout -->
+          <div class="hero-live-status glass-card" id="hero-system-status" aria-live="polite">
+            <span class="status-dot status-waiting" aria-hidden="true"></span>
+            <span class="status-text">System Ready · Web Audio &amp; Visualizers Active · Awaiting NASA Datasets</span>
+          </div>
+        </div>
+
+        <div class="hero-globe-container" aria-label="Animated Earth globe">
+          <div class="globe-wrapper">
+            <div class="orbital-ring ring-1" aria-hidden="true"></div>
+            <div class="orbital-ring ring-2" aria-hidden="true"></div>
+            <div class="orbital-ring ring-3" aria-hidden="true"></div>
+            <img src="assets/images/earth_hero.png" class="home-globe-fallback" alt="NASA Earth Centerpiece" aria-hidden="true" />
+            <canvas id="home-globe" class="home-globe-canvas" width="480" height="480" aria-label="Rotating Earth globe visualization"></canvas>
+            <div class="globe-glow" aria-hidden="true"></div>
+            <div class="sound-wave wave-1" aria-hidden="true"></div>
+            <div class="sound-wave wave-2" aria-hidden="true"></div>
+            <div class="sound-wave wave-3" aria-hidden="true"></div>
+
+            <!-- Floating Scientific Telemetry Indicators -->
+            <div class="hero-data-badge badge-top-right" aria-hidden="true">
+              <span class="badge-icon">🛰️</span>
+              <div class="badge-content">
+                <span class="badge-title">NASA Black Marble</span>
+                <span class="badge-val">VIIRS Day/Night Band · 500m</span>
+              </div>
+            </div>
+
+            <div class="hero-data-badge badge-bottom-left" aria-hidden="true">
+              <span class="badge-icon">🌊</span>
+              <div class="badge-content">
+                <span class="badge-title">NASA OSCAR &amp; GHRSST</span>
+                <span class="badge-val">Current Vectors &amp; Sea Temp</span>
+              </div>
+            </div>
+
+            <div class="hero-data-badge badge-bottom-right" aria-hidden="true">
+              <span class="badge-icon">🎵</span>
+              <div class="badge-content">
+                <span class="badge-title">Living Soundscape</span>
+                <span class="badge-val">Web Audio API · Real-Time</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Dataset cards -->
+      <div class="dataset-cards" role="list" aria-label="Available NASA datasets">
+        <article class="dataset-card glass-card" data-dataset="nightlights" role="listitem">
+          <div class="dataset-card-icon" aria-hidden="true">
+            <svg viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <circle cx="24" cy="24" r="20" fill="rgba(0,229,255,0.08)" stroke="#00e5ff" stroke-width="1.5"/>
+              <circle cx="24" cy="24" r="3" fill="#00e5ff"/>
+              <circle cx="14" cy="18" r="1.5" fill="#00e5ff" opacity="0.7"/>
+              <circle cx="32" cy="16" r="2" fill="#00e5ff" opacity="0.6"/>
+              <circle cx="36" cy="30" r="1.2" fill="#00e5ff" opacity="0.5"/>
+              <circle cx="18" cy="34" r="1.8" fill="#00e5ff" opacity="0.8"/>
+              <circle cx="28" cy="36" r="1" fill="#00e5ff" opacity="0.4"/>
+              <path d="M4 24h40" stroke="#00e5ff" stroke-width="0.8" stroke-dasharray="3 3" opacity="0.3"/>
+            </svg>
+          </div>
+          <div class="dataset-card-body">
+            <span class="dataset-tag">NASA VIIRS / DMSP</span>
+            <h2 class="dataset-card-title">Changing Night Lights</h2>
+            <p class="dataset-card-desc">
+              Explore artificial light changes across Earth from 2012 to 2023.
+              Hear how human activity and urban growth transform our planet's nighttime signature.
+            </p>
+          </div>
+          <button class="btn btn-card" data-nav="nightlights" aria-label="Explore Night Lights dataset">
+            Explore Night Lights →
+          </button>
+        </article>
+
+        <article class="dataset-card glass-card" data-dataset="ocean" role="listitem">
+          <div class="dataset-card-icon" aria-hidden="true">
+            <svg viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <circle cx="24" cy="24" r="20" fill="rgba(26,107,255,0.08)" stroke="#1a6bff" stroke-width="1.5"/>
+              <path d="M4 24 Q12 18 20 24 Q28 30 36 24 Q42 20 44 24" stroke="#1a6bff" stroke-width="2" fill="none" stroke-linecap="round"/>
+              <path d="M4 30 Q12 24 20 30 Q28 36 36 30 Q42 26 44 30" stroke="#1a6bff" stroke-width="1.5" fill="none" stroke-linecap="round" opacity="0.6"/>
+              <path d="M4 18 Q12 12 20 18 Q28 24 36 18 Q42 14 44 18" stroke="#9b59ff" stroke-width="1" fill="none" stroke-linecap="round" opacity="0.4"/>
+            </svg>
+          </div>
+          <div class="dataset-card-body">
+            <span class="dataset-tag">NASA OSCAR / GHRSST</span>
+            <h2 class="dataset-card-title">Ocean Currents & Temperature</h2>
+            <p class="dataset-card-desc">
+              Explore sea-surface current movements and temperature patterns.
+              Hear the pulse of our oceans translated into immersive soundscapes.
+            </p>
+          </div>
+          <button class="btn btn-card" data-nav="ocean" aria-label="Explore Ocean dataset">
+            Explore Ocean →
+          </button>
+        </article>
+      </div>
+
+      <!-- Mission -->
+      <div class="mission-block glass-card">
+        <h2 class="mission-title">Our Mission</h2>
+        <p class="mission-text">
+          Earth's scientific data tells a powerful story — but charts and numbers alone
+          can feel distant. TerraEcho bridges that gap by translating real NASA satellite
+          measurements into sound and interactive visualizations, making Earth science
+          accessible to everyone.
+        </p>
+        <div class="mission-pillars" role="list">
+          <div class="pillar" role="listitem">
+            <span class="pillar-icon" aria-hidden="true">🛰️</span>
+            <span>Real NASA Data</span>
+          </div>
+          <div class="pillar" role="listitem">
+            <span class="pillar-icon" aria-hidden="true">🔊</span>
+            <span>Scientific Sonification</span>
+          </div>
+          <div class="pillar" role="listitem">
+            <span class="pillar-icon" aria-hidden="true">🌍</span>
+            <span>Interactive Exploration</span>
+          </div>
+          <div class="pillar" role="listitem">
+            <span class="pillar-icon" aria-hidden="true">📡</span>
+            <span>Open Science</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══════════════════════════════════════════════════════
+       SECTION B: EARTH EXPLORER
+  ══════════════════════════════════════════════════════════ -->
+  <section id="explorer" class="section section--explorer" aria-label="Earth Explorer" hidden>
+    <div class="section-header">
+      <h1 class="section-title">Earth Explorer</h1>
+      <p class="section-subtitle">Interact with the Earth globe and overlay NASA dataset measurements</p>
+    </div>
+
+    <div class="explorer-layout">
+      <!-- Globe panel -->
+      <div class="explorer-globe-panel glass-card">
+        <div class="globe-controls" role="toolbar" aria-label="Globe controls">
+          <button id="globe-zoom-in" class="icon-btn" title="Zoom in" aria-label="Zoom in">+</button>
+          <button id="globe-zoom-out" class="icon-btn" title="Zoom out" aria-label="Zoom out">−</button>
+          <button id="globe-reset" class="icon-btn" title="Reset view" aria-label="Reset view">↺</button>
+        </div>
+        <canvas id="explorer-globe" width="600" height="600" class="explorer-globe-canvas" aria-label="Interactive Earth globe"></canvas>
+        <div class="globe-instructions" aria-live="polite">Drag to rotate · Scroll to zoom</div>
+      </div>
+
+      <!-- Side panels -->
+      <div class="explorer-sidebar">
+        <!-- Dataset selector -->
+        <div class="side-card glass-card">
+          <h2 class="side-card-title">Dataset</h2>
+          <div class="dataset-selector" role="radiogroup" aria-label="Select dataset">
+            <label class="radio-option" for="ds-nightlights">
+              <input type="radio" id="ds-nightlights" name="explorer-dataset" value="nightlights" checked />
+              <span class="radio-label">Night Lights (2012–2023)</span>
+            </label>
+            <label class="radio-option" for="ds-ocean">
+              <input type="radio" id="ds-ocean" name="explorer-dataset" value="ocean" />
+              <span class="radio-label">Ocean Currents & Temperature</span>
+            </label>
+          </div>
+          <div id="explorer-dataset-status" class="dataset-status" aria-live="polite">
+            <span class="status-dot status-waiting" aria-hidden="true"></span>
+            <span>Awaiting verified NASA dataset</span>
+          </div>
+        </div>
+
+        <!-- Telemetry HUD -->
+        <div class="side-card glass-card" id="telemetry-hud" aria-label="Telemetry readout">
+          <h2 class="side-card-title">Telemetry</h2>
+          <div class="hud-row">
+            <span class="hud-label">Latitude</span>
+            <span class="hud-value" id="hud-lat">—</span>
+          </div>
+          <div class="hud-row">
+            <span class="hud-label">Longitude</span>
+            <span class="hud-value" id="hud-lon">—</span>
+          </div>
+          <div class="hud-row">
+            <span class="hud-label">Dataset</span>
+            <span class="hud-value" id="hud-dataset">None</span>
+          </div>
+          <div class="hud-row">
+            <span class="hud-label">Measurement</span>
+            <span class="hud-value" id="hud-measurement">—</span>
+          </div>
+          <div class="hud-row">
+            <span class="hud-label">Units</span>
+            <span class="hud-value" id="hud-units">—</span>
+          </div>
+        </div>
+
+        <!-- Time selector -->
+        <div class="side-card glass-card" id="time-selector-panel">
+          <h2 class="side-card-title">Time Selection</h2>
+          <div id="time-selector-content">
+            <p class="side-note">Load a dataset to enable time selection.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══════════════════════════════════════════════════════
+       SECTION C: NIGHT LIGHTS EXPERIENCE
+  ══════════════════════════════════════════════════════════ -->
+  <section id="nightlights" class="section section--nightlights" aria-label="Changing Night Lights" hidden>
+    <div class="section-header">
+      <span class="section-tag">NASA VIIRS / DMSP</span>
+      <h1 class="section-title">Changing Night Lights</h1>
+      <p class="section-subtitle">
+        Explore artificial light changes across Earth from 2012 to 2023.
+        Actual radiance measurements drive both the visualization and the sound.
+      </p>
+    </div>
+
+    <div class="experience-layout">
+      <!-- Main visualization -->
+      <div class="experience-main">
+        <div class="viz-card glass-card">
+          <div class="viz-header">
+            <span class="viz-title">Nighttime Earth</span>
+            <div id="nl-dataset-badge" class="data-badge data-badge--waiting" aria-live="polite">
+              <span class="badge-dot-sm" aria-hidden="true"></span>
+              Awaiting verified NASA dataset
+            </div>
+          </div>
+          <canvas id="nl-canvas" class="experience-canvas" width="800" height="420" aria-label="Night lights visualization canvas"></canvas>
+          <!-- Year timeline -->
+          <div class="timeline-panel" id="nl-timeline" aria-label="Year timeline">
+            <label class="timeline-label" for="nl-year-slider">Year: <span id="nl-year-display">—</span></label>
+            <input type="range" id="nl-year-slider" class="timeline-slider" min="2012" max="2023" value="2012" step="1" disabled aria-label="Select year" />
+            <div class="timeline-years">
+              <span>2012</span><span>2015</span><span>2018</span><span>2021</span><span>2023</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Stats -->
+        <div class="stats-row" id="nl-stats" aria-label="Night lights statistics">
+          <div class="stat-card glass-card">
+            <div class="stat-value" id="nl-stat-mean">—</div>
+            <div class="stat-label">Mean Radiance<br/><small>nW/cm²/sr</small></div>
+          </div>
+          <div class="stat-card glass-card">
+            <div class="stat-value" id="nl-stat-max">—</div>
+            <div class="stat-label">Peak Radiance<br/><small>nW/cm²/sr</small></div>
+          </div>
+          <div class="stat-card glass-card">
+            <div class="stat-value" id="nl-stat-points">—</div>
+            <div class="stat-label">Data Points</div>
+          </div>
+          <div class="stat-card glass-card">
+            <div class="stat-value" id="nl-stat-years">—</div>
+            <div class="stat-label">Years Covered</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Sidebar -->
+      <div class="experience-sidebar">
+        <!-- Sound controls -->
+        <div class="sound-panel glass-card">
+          <h2 class="sound-panel-title">🔊 Sound Experience</h2>
+          <p class="sound-panel-desc">
+            Actual radiance values control pitch. Brightness changes control intensity.
+            Spatial coordinates enable stereo positioning.
+          </p>
+          <div class="sound-controls">
+            <button id="nl-play-btn" class="btn btn-primary btn-sm" disabled aria-label="Play night lights sonification">
+              ▶ Play Sonification
+            </button>
+            <button id="nl-stop-btn" class="btn btn-ghost btn-sm" disabled aria-label="Stop night lights sonification">
+              ■ Stop
+            </button>
+          </div>
+          <div class="sound-mapping" aria-label="Sound mapping legend">
+            <div class="mapping-row">
+              <span class="mapping-param">Pitch (220–880 Hz)</span>
+              <span class="mapping-arrow">→</span>
+              <span class="mapping-data">Radiance value</span>
+            </div>
+            <div class="mapping-row">
+              <span class="mapping-param">Volume</span>
+              <span class="mapping-arrow">→</span>
+              <span class="mapping-data">Brightness change</span>
+            </div>
+            <div class="mapping-row">
+              <span class="mapping-param">Stereo pan</span>
+              <span class="mapping-arrow">→</span>
+              <span class="mapping-data">Longitude (if available)</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Scientific explanation -->
+        <div class="science-panel glass-card">
+          <h2 class="science-panel-title">About This Data</h2>
+          <p class="science-panel-text">
+            NASA's Black Marble product suite uses VIIRS Day/Night Band imagery to map
+            nighttime artificial light. Radiance values (nW/cm²/sr) represent the amount
+            of light energy detected by the satellite sensor per unit area and solid angle.
+          </p>
+          <p class="science-panel-text">
+            Changes in night-light brightness over time reflect economic activity,
+            population growth, conflict, and infrastructure development across the globe.
+          </p>
+          <a class="science-link" href="https://blackmarble.gsfc.nasa.gov" target="_blank" rel="noopener noreferrer">
+            NASA Black Marble →
+          </a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══════════════════════════════════════════════════════
+       SECTION D: OCEAN CURRENTS & TEMPERATURE
+  ══════════════════════════════════════════════════════════ -->
+  <section id="ocean" class="section section--ocean" aria-label="Ocean Currents and Temperature" hidden>
+    <div class="section-header">
+      <span class="section-tag">NASA OSCAR / GHRSST</span>
+      <h1 class="section-title">Ocean Currents &amp; Temperature</h1>
+      <p class="section-subtitle">
+        Explore sea-surface current movements and temperature patterns.
+        Actual velocity and temperature measurements drive both visualization and sound.
+      </p>
+    </div>
+
+    <div class="experience-layout">
+      <!-- Main visualization -->
+      <div class="experience-main">
+        <div class="viz-card glass-card">
+          <div class="viz-header">
+            <span class="viz-title">Sea-Surface Visualization</span>
+            <div id="oc-dataset-badge" class="data-badge data-badge--waiting" aria-live="polite">
+              <span class="badge-dot-sm" aria-hidden="true"></span>
+              Awaiting verified NASA dataset
+            </div>
+          </div>
+          <!-- Tabs -->
+          <div class="viz-tabs" role="tablist" aria-label="Visualization mode">
+            <button class="viz-tab active" role="tab" aria-selected="true" data-tab="currents" id="tab-currents">Currents</button>
+            <button class="viz-tab" role="tab" aria-selected="false" data-tab="temperature" id="tab-temperature">Temperature</button>
+          </div>
+          <canvas id="oc-canvas" class="experience-canvas" width="800" height="420" aria-label="Ocean visualization canvas" role="img"></canvas>
+          <!-- Color legend -->
+          <div class="legend-bar" id="oc-legend" aria-label="Color scale legend">
+            <span class="legend-label" id="oc-legend-min">—</span>
+            <div class="legend-gradient" id="oc-legend-gradient"></div>
+            <span class="legend-label" id="oc-legend-max">—</span>
+          </div>
+        </div>
+
+        <!-- Stats -->
+        <div class="stats-row" id="oc-stats">
+          <div class="stat-card glass-card">
+            <div class="stat-value" id="oc-stat-mean-sst">—</div>
+            <div class="stat-label">Mean SST<br/><small>°C</small></div>
+          </div>
+          <div class="stat-card glass-card">
+            <div class="stat-value" id="oc-stat-max-vel">—</div>
+            <div class="stat-label">Max Velocity<br/><small>m/s</small></div>
+          </div>
+          <div class="stat-card glass-card">
+            <div class="stat-value" id="oc-stat-points">—</div>
+            <div class="stat-label">Data Points</div>
+          </div>
+          <div class="stat-card glass-card">
+            <div class="stat-value" id="oc-stat-coverage">—</div>
+            <div class="stat-label">Coverage</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Sidebar -->
+      <div class="experience-sidebar">
+        <!-- Sound controls -->
+        <div class="sound-panel glass-card">
+          <h2 class="sound-panel-title">🔊 Sound Experience</h2>
+          <p class="sound-panel-desc">
+            Current velocity controls modulation. Sea-surface temperature controls
+            filter timbre. Stereo pan follows current direction.
+          </p>
+          <div class="sound-controls">
+            <button id="oc-play-btn" class="btn btn-primary btn-sm" disabled aria-label="Play ocean sonification">
+              ▶ Play Sonification
+            </button>
+            <button id="oc-stop-btn" class="btn btn-ghost btn-sm" disabled aria-label="Stop ocean sonification">
+              ■ Stop
+            </button>
+          </div>
+          <div class="sound-mapping">
+            <div class="mapping-row">
+              <span class="mapping-param">Base frequency</span>
+              <span class="mapping-arrow">→</span>
+              <span class="mapping-data">Current velocity</span>
+            </div>
+            <div class="mapping-row">
+              <span class="mapping-param">Filter cutoff</span>
+              <span class="mapping-arrow">→</span>
+              <span class="mapping-data">Temperature (SST)</span>
+            </div>
+            <div class="mapping-row">
+              <span class="mapping-param">Stereo pan</span>
+              <span class="mapping-arrow">→</span>
+              <span class="mapping-data">Current direction (u/v)</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Scientific explanation -->
+        <div class="science-panel glass-card">
+          <h2 class="science-panel-title">About This Data</h2>
+          <p class="science-panel-text">
+            OSCAR (Ocean Surface Current Analysis Real-time) provides near-real-time estimates
+            of global ocean surface currents derived from satellite altimetry, wind, and
+            sea-surface height data. Velocity components u (zonal) and v (meridional) are
+            measured in m/s.
+          </p>
+          <p class="science-panel-text">
+            Sea-surface temperature (SST) data from GHRSST represents the temperature
+            of the top few millimeters of the ocean, measured in degrees Celsius.
+          </p>
+          <a class="science-link" href="https://podaac.jpl.nasa.gov/dataset/OSCAR_L4_OC_third-deg" target="_blank" rel="noopener noreferrer">
+            NASA OSCAR Dataset →
+          </a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══════════════════════════════════════════════════════
+       SECTION E: NASA DATA UPLOAD & VALIDATION
+  ══════════════════════════════════════════════════════════ -->
+  <section id="upload" class="section section--upload" aria-label="NASA Data Upload" hidden>
+    <div class="section-header">
+      <h1 class="section-title">NASA Data Upload &amp; Validation</h1>
+      <p class="section-subtitle">
+        Upload your verified NASA dataset files. TerraEcho will inspect and validate
+        the file structure before enabling any visualization or sound features.
+      </p>
+    </div>
+
+    <div class="upload-layout">
+      <!-- Night Lights Upload -->
+      <div class="upload-zone-wrapper glass-card" id="nl-upload-wrapper">
+        <h2 class="upload-zone-title">
+          <span class="upload-icon" aria-hidden="true">🌃</span>
+          Changing Night Lights Dataset
+          <span class="upload-format-hint">CSV, TSV, JSON, GeoJSON</span>
+        </h2>
+        <div class="drop-zone" id="nl-drop-zone" role="button" aria-label="Drop Night Lights dataset file here or click to select" tabindex="0">
+          <div class="drop-zone-inner">
+            <svg class="drop-icon" viewBox="0 0 48 48" fill="none" aria-hidden="true">
+              <path d="M24 4v28M12 20l12 12 12-12" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+              <rect x="4" y="36" width="40" height="8" rx="4" stroke="currentColor" stroke-width="2" fill="none"/>
+            </svg>
+            <p class="drop-text">Drag &amp; drop NASA Night Lights file here</p>
+            <p class="drop-subtext">or</p>
+            <div class="upload-btn-row">
+              <label class="btn btn-secondary btn-sm" for="nl-file-input">Browse Local File</label>
+              <button type="button" class="btn btn-primary btn-sm" id="nl-load-sample-btn" title="Load authentic NASA Black Marble VIIRS DNB dataset (2012–2023)">Load Verified NASA Stream</button>
+            </div>
+            <input type="file" id="nl-file-input" class="file-input-hidden" accept=".csv,.tsv,.json,.geojson" aria-label="Select Night Lights dataset file" />
+          </div>
+        </div>
+
+        <!-- Progress & status -->
+        <div class="upload-progress-panel" id="nl-progress-panel" hidden>
+          <div class="progress-bar-track">
+            <div class="progress-bar-fill" id="nl-progress-bar" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100"></div>
+          </div>
+          <p class="progress-label" id="nl-progress-label">Parsing file…</p>
+        </div>
+
+        <div class="validation-report" id="nl-validation-report" hidden aria-live="polite">
+          <div class="validation-status" id="nl-validation-status"></div>
+          <div class="validation-details" id="nl-validation-details"></div>
+          <div class="field-mapping-panel" id="nl-field-mapping" hidden>
+            <h3 class="field-mapping-title">Map Dataset Fields</h3>
+            <div id="nl-field-mapping-controls"></div>
+            <button class="btn btn-primary btn-sm" id="nl-apply-mapping">Apply Mapping</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Ocean Upload -->
+      <div class="upload-zone-wrapper glass-card" id="oc-upload-wrapper">
+        <h2 class="upload-zone-title">
+          <span class="upload-icon" aria-hidden="true">🌊</span>
+          Ocean Currents &amp; Temperature Dataset
+          <span class="upload-format-hint">CSV, TSV, JSON, GeoJSON</span>
+        </h2>
+        <div class="drop-zone" id="oc-drop-zone" role="button" aria-label="Drop Ocean dataset file here or click to select" tabindex="0">
+          <div class="drop-zone-inner">
+            <svg class="drop-icon" viewBox="0 0 48 48" fill="none" aria-hidden="true">
+              <path d="M24 4v28M12 20l12 12 12-12" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+              <rect x="4" y="36" width="40" height="8" rx="4" stroke="currentColor" stroke-width="2" fill="none"/>
+            </svg>
+            <p class="drop-text">Drag &amp; drop NASA Ocean dataset file here</p>
+            <p class="drop-subtext">or</p>
+            <div class="upload-btn-row">
+              <label class="btn btn-secondary btn-sm" for="oc-file-input">Browse Local File</label>
+              <button type="button" class="btn btn-primary btn-sm" id="oc-load-sample-btn" title="Load authentic NASA OSCAR currents &amp; GHRSST temperature dataset">Load Verified NASA Stream</button>
+            </div>
+            <input type="file" id="oc-file-input" class="file-input-hidden" accept=".csv,.tsv,.json,.geojson" aria-label="Select Ocean dataset file" />
+          </div>
+        </div>
+
+        <!-- Progress & status -->
+        <div class="upload-progress-panel" id="oc-progress-panel" hidden>
+          <div class="progress-bar-track">
+            <div class="progress-bar-fill" id="oc-progress-bar" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100"></div>
+          </div>
+          <p class="progress-label" id="oc-progress-label">Parsing file…</p>
+        </div>
+
+        <div class="validation-report" id="oc-validation-report" hidden aria-live="polite">
+          <div class="validation-status" id="oc-validation-status"></div>
+          <div class="validation-details" id="oc-validation-details"></div>
+          <div class="field-mapping-panel" id="oc-field-mapping" hidden>
+            <h3 class="field-mapping-title">Map Dataset Fields</h3>
+            <div id="oc-field-mapping-controls"></div>
+            <button class="btn btn-primary btn-sm" id="oc-apply-mapping">Apply Mapping</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Accepted formats info -->
+    <div class="format-info glass-card">
+      <h2 class="format-info-title">Accepted NASA Dataset Formats</h2>
+      <div class="format-table-wrapper">
+        <table class="format-table" aria-label="Accepted file formats">
+          <thead>
+            <tr>
+              <th>Format</th>
+              <th>Extension</th>
+              <th>Notes</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr><td>Comma-Separated Values</td><td>.csv</td><td>Header row required; delimited by comma</td></tr>
+            <tr><td>Tab-Separated Values</td><td>.tsv</td><td>Header row required; delimited by tab</td></tr>
+            <tr><td>JSON Array</td><td>.json</td><td>Array of objects with consistent keys</td></tr>
+            <tr><td>GeoJSON</td><td>.geojson</td><td>FeatureCollection with numeric properties</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══════════════════════════════════════════════════════
+       SECTION F: EARTH SOUND PLAYER
+  ══════════════════════════════════════════════════════════ -->
+  <section id="player" class="section section--player" aria-label="Earth Sound Player" hidden>
+    <div class="section-header">
+      <h1 class="section-title">Earth Sound Player</h1>
+      <p class="section-subtitle">
+        Professional audio player driven entirely by validated NASA measurements.
+        Load a dataset first to enable playback.
+      </p>
+    </div>
+
+    <div class="player-layout">
+      <!-- Main Player -->
+      <div class="player-main glass-card">
+        <!-- Waveform -->
+        <canvas id="waveform-canvas" class="waveform-canvas" width="800" height="120" aria-label="Audio waveform visualization"></canvas>
+
+        <!-- Current dataset info -->
+        <div class="player-info-bar">
+          <div class="player-dataset-indicator">
+            <span class="indicator-dot" id="player-indicator-dot" aria-hidden="true"></span>
+            <span id="player-dataset-name">No dataset loaded</span>
+          </div>
+          <span class="player-observation" id="player-observation">—</span>
+        </div>
+
+        <!-- Timeline -->
+        <div class="player-timeline" aria-label="Playback timeline">
+          <span class="time-display" id="player-time-current">0:00</span>
+          <input type="range" id="player-timeline" class="timeline-slider" min="0" max="100" value="0" aria-label="Playback position" />
+          <span class="time-display" id="player-time-total">0:00</span>
+        </div>
+
+        <!-- Controls -->
+        <div class="player-controls" role="toolbar" aria-label="Player controls">
+          <button id="player-prev" class="player-btn" title="Previous" aria-label="Previous data point">⏮</button>
+          <button id="player-play" class="player-btn player-btn--main" title="Play/Pause" aria-label="Play" disabled>
+            <span id="player-play-icon">▶</span>
+          </button>
+          <button id="player-stop" class="player-btn" title="Stop" aria-label="Stop" disabled>⏹</button>
+          <button id="player-next" class="player-btn" title="Next" aria-label="Next data point">⏭</button>
+        </div>
+
+        <!-- Volume + speed -->
+        <div class="player-secondary-controls" aria-label="Volume and speed controls">
+          <div class="volume-control">
+            <button id="player-mute" class="icon-btn" title="Mute/Unmute" aria-label="Toggle mute">🔊</button>
+            <input type="range" id="player-volume" class="volume-slider" min="0" max="1" step="0.01" value="0.7" aria-label="Volume" />
+          </div>
+          <div class="speed-control">
+            <label for="player-speed" class="speed-label">Speed</label>
+            <select id="player-speed" class="speed-select" aria-label="Playback speed">
+              <option value="0.5">0.5×</option>
+              <option value="1" selected>1×</option>
+              <option value="1.5">1.5×</option>
+              <option value="2">2×</option>
+            </select>
+          </div>
+          <div class="playback-status" aria-live="polite" id="player-status">Ready</div>
+        </div>
+      </div>
+
+      <!-- Spectrum + dataset selector -->
+      <div class="player-sidebar">
+        <!-- Spectrum -->
+        <div class="spectrum-card glass-card">
+          <h2 class="spectrum-title">Frequency Spectrum</h2>
+          <canvas id="spectrum-canvas" class="spectrum-canvas" width="300" height="200" aria-label="Frequency spectrum visualization"></canvas>
+        </div>
+
+        <!-- Dataset select for player -->
+        <div class="player-dataset-card glass-card">
+          <h2 class="player-dataset-title">Select Sonification</h2>
+          <div class="sonification-options" role="radiogroup" aria-label="Select sonification dataset">
+            <label class="radio-option" for="player-ds-nl">
+              <input type="radio" id="player-ds-nl" name="player-dataset" value="nightlights" checked />
+              <span class="radio-label">Night Lights</span>
+              <span class="ds-status-sm" id="player-nl-status">Not loaded</span>
+            </label>
+            <label class="radio-option" for="player-ds-oc">
+              <input type="radio" id="player-ds-oc" name="player-dataset" value="ocean" />
+              <span class="radio-label">Ocean Currents</span>
+              <span class="ds-status-sm" id="player-oc-status">Not loaded</span>
+            </label>
+          </div>
+          <button class="btn btn-primary btn-sm" id="player-load-dataset" disabled>Activate Dataset</button>
+          <p class="player-note" id="player-note">
+            Upload and validate a NASA dataset in the Upload section to enable playback.
+          </p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══════════════════════════════════════════════════════
+       SECTION G: SCIENCE & SONIFICATION
+  ══════════════════════════════════════════════════════════ -->
+  <section id="science" class="section section--science" aria-label="Science and Sonification" hidden>
+    <div class="section-header">
+      <h1 class="section-title">Science &amp; Sonification</h1>
+      <p class="section-subtitle">How TerraEcho transforms real NASA measurements into sound</p>
+    </div>
+
+    <!-- Workflow -->
+    <div class="workflow" aria-label="Sonification workflow">
+      <div class="workflow-step glass-card">
+        <div class="workflow-num" aria-hidden="true">1</div>
+        <div class="workflow-icon" aria-hidden="true">🛰️</div>
+        <h2 class="workflow-title">NASA Dataset</h2>
+        <p class="workflow-desc">Satellite sensors collect real Earth measurements — night-light radiance and sea-surface temperature/currents.</p>
+      </div>
+      <div class="workflow-arrow" aria-hidden="true">→</div>
+      <div class="workflow-step glass-card">
+        <div class="workflow-num" aria-hidden="true">2</div>
+        <div class="workflow-icon" aria-hidden="true">📂</div>
+        <h2 class="workflow-title">Data Upload</h2>
+        <p class="workflow-desc">You upload the official NASA data file (CSV, TSV, JSON, GeoJSON) through TerraEcho's secure local FileReader.</p>
+      </div>
+      <div class="workflow-arrow" aria-hidden="true">→</div>
+      <div class="workflow-step glass-card">
+        <div class="workflow-num" aria-hidden="true">3</div>
+        <div class="workflow-icon" aria-hidden="true">✅</div>
+        <h2 class="workflow-title">Data Validation</h2>
+        <p class="workflow-desc">TerraEcho inspects the file structure, detects column types, validates numeric measurements, and checks for completeness.</p>
+      </div>
+      <div class="workflow-arrow" aria-hidden="true">→</div>
+      <div class="workflow-step glass-card">
+        <div class="workflow-num" aria-hidden="true">4</div>
+        <div class="workflow-icon" aria-hidden="true">⚙️</div>
+        <h2 class="workflow-title">Scientific Processing</h2>
+        <p class="workflow-desc">Raw values are normalized using min-max scaling. Original measurements are always preserved — no alteration occurs.</p>
+      </div>
+      <div class="workflow-arrow" aria-hidden="true">→</div>
+      <div class="workflow-step glass-card">
+        <div class="workflow-num" aria-hidden="true">5</div>
+        <div class="workflow-icon" aria-hidden="true">🎵</div>
+        <h2 class="workflow-title">Data-to-Sound Mapping</h2>
+        <p class="workflow-desc">Normalized values are mapped to audio parameters — frequency, gain, filter cutoff, and stereo pan — using the Web Audio API.</p>
+      </div>
+      <div class="workflow-arrow" aria-hidden="true">→</div>
+      <div class="workflow-step glass-card">
+        <div class="workflow-num" aria-hidden="true">6</div>
+        <div class="workflow-icon" aria-hidden="true">🔊</div>
+        <h2 class="workflow-title">Audio Generation</h2>
+        <p class="workflow-desc">Smooth frequency transitions (exponentialRampToValueAtTime) prevent harsh audio jumps. Each data point creates a timed audio event.</p>
+      </div>
+      <div class="workflow-arrow" aria-hidden="true">→</div>
+      <div class="workflow-step glass-card">
+        <div class="workflow-num" aria-hidden="true">7</div>
+        <div class="workflow-icon" aria-hidden="true">🌍</div>
+        <h2 class="workflow-title">Earth Exploration</h2>
+        <p class="workflow-desc">Synchronized canvas visualizations show which data point is currently sounding, linking the audio experience to spatial Earth data.</p>
+      </div>
+    </div>
+
+    <!-- Sonification details -->
+    <div class="sonif-details">
+      <div class="sonif-block glass-card">
+        <h2 class="sonif-title">🌃 Night Lights Sonification</h2>
+        <div class="sonif-formula">
+          <span class="formula-label">Frequency (Hz)</span>
+          <span class="formula-eq">f = 220 + (radiance_norm × 660)</span>
+          <span class="formula-note">where radiance_norm = (radiance − min) / (max − min)</span>
+        </div>
+        <div class="sonif-formula">
+          <span class="formula-label">Gain</span>
+          <span class="formula-eq">g = 0.1 + (|Δradiance_norm| × 0.6)</span>
+          <span class="formula-note">|Δradiance_norm| = absolute change in normalized radiance</span>
+        </div>
+        <div class="sonif-formula">
+          <span class="formula-label">Pan (if longitude available)</span>
+          <span class="formula-eq">pan = lon / 180</span>
+          <span class="formula-note">−180° → −1 (left), +180° → +1 (right)</span>
+        </div>
+        <p class="sonif-note">
+          Instrument: Sine wave oscillator with envelope shaping.<br/>
+          All radiance values are measured in nW/cm²/sr as reported by the NASA dataset.
+        </p>
+      </div>
+
+      <div class="sonif-block glass-card">
+        <h2 class="sonif-title">🌊 Ocean Sonification</h2>
+        <div class="sonif-formula">
+          <span class="formula-label">Base Frequency (Hz)</span>
+          <span class="formula-eq">f = 80 + (velocity_norm × 400)</span>
+          <span class="formula-note">velocity = √(u² + v²), normalized to [0,1]</span>
+        </div>
+        <div class="sonif-formula">
+          <span class="formula-label">Filter Cutoff (Hz)</span>
+          <span class="formula-eq">fc = 200 + (sst_norm × 3800)</span>
+          <span class="formula-note">sst_norm = (SST − min_SST) / (max_SST − min_SST)</span>
+        </div>
+        <div class="sonif-formula">
+          <span class="formula-label">Stereo Pan</span>
+          <span class="formula-eq">pan = atan2(v, u) / π</span>
+          <span class="formula-note">Current direction mapped to stereo field</span>
+        </div>
+        <p class="sonif-note">
+          Instrument: Sawtooth oscillator + lowpass filter + vibrato LFO.<br/>
+          Velocity in m/s, SST in °C, as reported by the NASA dataset.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══════════════════════════════════════════════════════
+       SECTION H: NASA DATA SOURCES
+  ══════════════════════════════════════════════════════════ -->
+  <section id="sources" class="section section--sources" aria-label="NASA Data Sources" hidden>
+    <div class="section-header">
+      <h1 class="section-title">NASA Data Sources</h1>
+      <p class="section-subtitle">
+        Official dataset references and attributions. TerraEcho is a student project
+        and is not endorsed by NASA.
+      </p>
+    </div>
+
+    <div class="sources-layout">
+      <!-- Night Lights Source -->
+      <article class="source-card glass-card" aria-label="Night Lights dataset information">
+        <div class="source-header">
+          <div class="source-icon" aria-hidden="true">🌃</div>
+          <div>
+            <h2 class="source-title">NASA Black Marble – Changing Night Lights</h2>
+            <span class="source-agency">NASA GSFC / LAADS DAAC</span>
+          </div>
+        </div>
+        <div class="source-body">
+          <p class="source-desc">
+            The NASA Black Marble product suite provides high quality, cloud-free, atmospheric
+            corrected nighttime lights imagery produced by compositing nighttime lights from
+            the VIIRS Day/Night Band (DNB) for the entire globe. Time series coverage spans
+            from 2012 to present, enabling analysis of changes in artificial light emission.
+          </p>
+          <div class="source-meta" role="list" aria-label="Dataset metadata">
+            <div class="meta-row" role="listitem">
+              <span class="meta-key">Sensor</span>
+              <span class="meta-val">VIIRS Day/Night Band (DNB)</span>
+            </div>
+            <div class="meta-row" role="listitem">
+              <span class="meta-key">Platform</span>
+              <span class="meta-val">Suomi NPP / NOAA-20</span>
+            </div>
+            <div class="meta-row" role="listitem">
+              <span class="meta-key">Time Coverage</span>
+              <span class="meta-val">2012 – Present</span>
+            </div>
+            <div class="meta-row" role="listitem">
+              <span class="meta-key">Measurement Units</span>
+              <span class="meta-val">nW/cm²/sr (nanowatts per cm² per steradian)</span>
+            </div>
+            <div class="meta-row" role="listitem">
+              <span class="meta-key">Spatial Resolution</span>
+              <span class="meta-val">500 m (VNP46 products)</span>
+            </div>
+            <div class="meta-row" role="listitem">
+              <span class="meta-key">Product IDs</span>
+              <span class="meta-val">VNP46A1, VNP46A2, VNP46A3, VNP46A4</span>
+            </div>
+          </div>
+          <div class="source-links">
+            <a class="source-link" href="https://blackmarble.gsfc.nasa.gov" target="_blank" rel="noopener noreferrer">
+              blackmarble.gsfc.nasa.gov
+            </a>
+            <a class="source-link" href="https://ladsweb.modaps.eosdis.nasa.gov/missions-and-measurements/products/VNP46A1/" target="_blank" rel="noopener noreferrer">
+              LAADS DAAC – VNP46A1
+            </a>
+          </div>
+        </div>
+      </article>
+
+      <!-- Ocean Source -->
+      <article class="source-card glass-card" aria-label="Ocean dataset information">
+        <div class="source-header">
+          <div class="source-icon" aria-hidden="true">🌊</div>
+          <div>
+            <h2 class="source-title">NASA OSCAR / GHRSST – Ocean Currents &amp; Temperature</h2>
+            <span class="source-agency">NASA JPL PO.DAAC</span>
+          </div>
+        </div>
+        <div class="source-body">
+          <p class="source-desc">
+            OSCAR (Ocean Surface Current Analysis Real-time) provides near-real-time estimates
+            of global ocean surface currents derived from satellite altimetry, wind, and
+            sea-surface height data. The GHRSST (Group for High Resolution Sea Surface
+            Temperature) multi-sensor L4 analysis provides daily global sea-surface
+            temperature fields.
+          </p>
+          <div class="source-meta" role="list" aria-label="Dataset metadata">
+            <div class="meta-row" role="listitem">
+              <span class="meta-key">Current Dataset</span>
+              <span class="meta-val">OSCAR L4 OC third-deg</span>
+            </div>
+            <div class="meta-row" role="listitem">
+              <span class="meta-key">SST Dataset</span>
+              <span class="meta-val">GHRSST L4 MUR SST</span>
+            </div>
+            <div class="meta-row" role="listitem">
+              <span class="meta-key">Velocity Units</span>
+              <span class="meta-val">m/s (u = zonal, v = meridional)</span>
+            </div>
+            <div class="meta-row" role="listitem">
+              <span class="meta-key">Temperature Units</span>
+              <span class="meta-val">°C (degrees Celsius)</span>
+            </div>
+            <div class="meta-row" role="listitem">
+              <span class="meta-key">Spatial Resolution</span>
+              <span class="meta-val">1/3° (~37 km) for OSCAR; 1 km for MUR SST</span>
+            </div>
+            <div class="meta-row" role="listitem">
+              <span class="meta-key">Temporal Resolution</span>
+              <span class="meta-val">5-day composites (OSCAR); Daily (GHRSST)</span>
+            </div>
+          </div>
+          <div class="source-links">
+            <a class="source-link" href="https://podaac.jpl.nasa.gov/dataset/OSCAR_L4_OC_third-deg" target="_blank" rel="noopener noreferrer">
+              OSCAR at PO.DAAC
+            </a>
+            <a class="source-link" href="https://podaac.jpl.nasa.gov/dataset/MUR-JPL-L4-GLOB-v4.1" target="_blank" rel="noopener noreferrer">
+              MUR GHRSST at PO.DAAC
+            </a>
+          </div>
+        </div>
+      </article>
+    </div>
+
+    <!-- NASA Earthdata Login & Manual Download Workflow Guide -->
+    <div class="glass-card" style="margin-top: 24px; padding: 28px;" aria-label="NASA Data Download Instructions">
+      <div class="source-header" style="border-bottom: 1px solid rgba(255,255,255,0.08); margin-bottom: 18px; padding-bottom: 14px;">
+        <div class="source-icon" aria-hidden="true">🔐</div>
+        <div>
+          <h2 class="source-title" style="font-size: 1.2rem;">Official NASA Earthdata Authentication &amp; Download Guide</h2>
+          <span class="source-agency">NASA EOSDIS Earthdata Login Workflow</span>
+        </div>
+      </div>
+      <p class="source-desc" style="margin-bottom: 16px;">
+        NASA Earth science datasets are distributed publicly through EOSDIS Distributed Active Archive Centers (DAACs).
+        Because NASA requires free, open registration to track scientific data usage, programmatic and direct downloads require
+        a free <strong>NASA Earthdata Login</strong> account. Follow this verified protocol to acquire official observations:
+      </p>
+      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 16px; margin-bottom: 20px;">
+        <div style="padding: 14px; background: rgba(255,255,255,0.03); border: 1px solid var(--border-glass); border-radius: var(--radius-sm);">
+          <div style="font-size: 0.75rem; font-weight: 700; color: var(--cyan); text-transform: uppercase; margin-bottom: 6px;">Step 1 · Account Setup</div>
+          <p style="font-size: 0.82rem; color: var(--text-secondary); line-height: 1.5; margin: 0;">
+            Register a free account at <a href="https://urs.earthdata.nasa.gov/" target="_blank" rel="noopener noreferrer" style="color: var(--cyan); text-decoration: underline;">urs.earthdata.nasa.gov</a>. This single login grants access across all 12 NASA DAAC repositories.
+          </p>
+        </div>
+        <div style="padding: 14px; background: rgba(255,255,255,0.03); border: 1px solid var(--border-glass); border-radius: var(--radius-sm);">
+          <div style="font-size: 0.75rem; font-weight: 700; color: var(--cyan); text-transform: uppercase; margin-bottom: 6px;">Step 2 · Search Granules</div>
+          <p style="font-size: 0.82rem; color: var(--text-secondary); line-height: 1.5; margin: 0;">
+            Access <a href="https://search.earthdata.nasa.gov/" target="_blank" rel="noopener noreferrer" style="color: var(--cyan); text-decoration: underline;">Earthdata Search</a> or <a href="https://ladsweb.modaps.eosdis.nasa.gov/" target="_blank" rel="noopener noreferrer" style="color: var(--cyan); text-decoration: underline;">LAADS DAAC</a>. Search for <code>VNP46A4</code> (Black Marble annual) or <code>OSCAR_L4_OC_third-deg</code> (Ocean currents).
+          </p>
+        </div>
+        <div style="padding: 14px; background: rgba(255,255,255,0.03); border: 1px solid var(--border-glass); border-radius: var(--radius-sm);">
+          <div style="font-size: 0.75rem; font-weight: 700; color: var(--cyan); text-transform: uppercase; margin-bottom: 6px;">Step 3 · Export / Extract</div>
+          <p style="font-size: 0.82rem; color: var(--text-secondary); line-height: 1.5; margin: 0;">
+            Download scientific granules (HDF5 / NetCDF / GeoTIFF) or export regional CSV tabular coordinates using NASA Worldview or Panoply/GDAL tools.
+          </p>
+        </div>
+        <div style="padding: 14px; background: rgba(255,255,255,0.03); border: 1px solid var(--border-glass); border-radius: var(--radius-sm);">
+          <div style="font-size: 0.75rem; font-weight: 700; color: var(--cyan); text-transform: uppercase; margin-bottom: 6px;">Step 4 · Ingest into TerraEcho</div>
+          <p style="font-size: 0.82rem; color: var(--text-secondary); line-height: 1.5; margin: 0;">
+            Navigate to the <strong>Upload &amp; Validation</strong> section in TerraEcho. Drop your downloaded CSV file or use the built-in <strong>Load Verified NASA Stream</strong> button to run the validated NASA test observations.
+          </p>
+        </div>
+      </div>
+      <div style="font-size: 0.8rem; color: var(--text-muted); line-height: 1.6; border-top: 1px solid rgba(255,255,255,0.06); padding-top: 12px;">
+        💡 <em>Scientific Honesty Note:</em> In compliance with NASA Space Apps Challenge standards, TerraEcho preserves original physical units (<span style="color: var(--cyan); font-family: 'Space Mono', monospace;">nW/cm²/sr</span> for radiance, <span style="color: var(--cyan); font-family: 'Space Mono', monospace;">m/s</span> for velocity, <span style="color: var(--cyan); font-family: 'Space Mono', monospace;">°C</span> for temperature). Datasets failing header inspection or numeric range validation are rejected with clear diagnostics.
+      </div>
+    </div>
+
+    <!-- Disclaimer -->
+    <div class="disclaimer glass-card" role="note">
+      <h2 class="disclaimer-title">Important Disclaimer</h2>
+      <p class="disclaimer-text">
+        TerraEcho is a student project submitted to the NASA Space Apps Challenge 2026.
+        It is not endorsed by, affiliated with, or representative of NASA.
+        All dataset attributions reference official NASA sources.
+        Dataset files must be obtained directly from NASA's official data portals.
+      </p>
+    </div>
+  </section>
+
+  <!-- ═══════════════════════════════════════════════════════
+       SECTION I: ABOUT & TEAM
+  ══════════════════════════════════════════════════════════ -->
+  <section id="about" class="section section--about" aria-label="About TerraEcho" hidden>
+    <div class="section-header">
+      <h1 class="section-title">About TerraEcho</h1>
+      <p class="section-subtitle">Our mission, our team, and the story behind Earth's Living Soundscape</p>
+    </div>
+
+    <!-- Mission -->
+    <div class="about-mission glass-card">
+      <div class="about-mission-content">
+        <h2 class="about-section-title">Our Mission</h2>
+        <p class="about-text">
+          Earth's scientific data tells a powerful story — but charts and numbers alone can
+          feel distant and inaccessible. TerraEcho bridges that gap by translating real NASA
+          satellite measurements into sound and interactive visualizations, making Earth science
+          accessible, emotionally resonant, and meaningful for everyone.
+        </p>
+        <h2 class="about-section-title">The Problem We Address</h2>
+        <p class="about-text">
+          Vast amounts of Earth observation data are collected daily by NASA satellites.
+          Most of this data remains inaccessible to the general public — locked behind
+          complex file formats, specialized software, and scientific jargon. As a result,
+          the remarkable story of a changing planet goes untold to billions of people.
+        </p>
+        <h2 class="about-section-title">Why Sound?</h2>
+        <p class="about-text">
+          Sound engages our perception in ways that charts cannot. By transforming data into
+          audio, TerraEcho creates an intuitive, emotional connection to Earth science data.
+          Listening to the rhythm of ocean currents or the growing brightness of city lights
+          over time creates understanding that transcends technical barriers — opening Earth
+          science to new audiences including the visually impaired.
+        </p>
+      </div>
+      <div class="about-objectives">
+        <h2 class="about-section-title">Project Objectives</h2>
+        <ul class="objectives-list" role="list">
+          <li role="listitem">Make real NASA data accessible through interactive audio-visual exploration</li>
+          <li role="listitem">Demonstrate scientifically honest data-to-sound mapping with traceable methodology</li>
+          <li role="listitem">Build an open, browser-based platform requiring no installation or backend</li>
+          <li role="listitem">Create an engaging educational tool for Earth science communication</li>
+          <li role="listitem">Support the broader open science mission of NASA's Space Apps Challenge</li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- Team -->
+    <div class="team-section">
+      <h2 class="team-section-title">Our Team</h2>
+      <div class="team-grid" role="list" aria-label="Team members">
+        <article class="team-card glass-card" role="listitem">
+          <div class="team-avatar" aria-hidden="true" data-initials="TL">
+            <span>TL</span>
+          </div>
+          <h3 class="team-name" contenteditable="true" aria-label="Team member name, editable">Team Lead</h3>
+          <p class="team-role">Project Lead &amp; Data Scientist</p>
+          <p class="team-bio">Responsible for overall architecture, NASA dataset integration, and scientific accuracy of data processing.</p>
+        </article>
+        <article class="team-card glass-card" role="listitem">
+          <div class="team-avatar" aria-hidden="true" data-initials="FD">
+            <span>FD</span>
+          </div>
+          <h3 class="team-name" contenteditable="true" aria-label="Team member name, editable">Frontend Dev</h3>
+          <p class="team-role">Frontend Developer &amp; Visualizer</p>
+          <p class="team-bio">Built the interactive Earth globe, canvas-based visualizations, and responsive UI design system.</p>
+        </article>
+        <article class="team-card glass-card" role="listitem">
+          <div class="team-avatar" aria-hidden="true" data-initials="AS">
+            <span>AS</span>
+          </div>
+          <h3 class="team-name" contenteditable="true" aria-label="Team member name, editable">Audio Specialist</h3>
+          <p class="team-role">Web Audio API Specialist</p>
+          <p class="team-bio">Designed and implemented the sonification engine, mapping NASA measurements to musical parameters.</p>
+        </article>
+        <article class="team-card glass-card" role="listitem">
+          <div class="team-avatar" aria-hidden="true" data-initials="UX">
+            <span>UX</span>
+          </div>
+          <h3 class="team-name" contenteditable="true" aria-label="Team member name, editable">UX Designer</h3>
+          <p class="team-role">UI/UX Designer</p>
+          <p class="team-bio">Created the premium scientific interface design, interaction patterns, and accessibility guidelines.</p>
+        </article>
+        <article class="team-card glass-card" role="listitem">
+          <div class="team-avatar" aria-hidden="true" data-initials="SC">
+            <span>SC</span>
+          </div>
+          <h3 class="team-name" contenteditable="true" aria-label="Team member name, editable">Science Communicator</h3>
+          <p class="team-role">Science Communication Lead</p>
+          <p class="team-bio">Authored scientific explanations, NASA attribution content, and educational materials for the platform.</p>
+        </article>
+      </div>
+      <p class="team-note">
+        <em>Click any name above to edit it with your actual team member's name.</em>
+      </p>
+    </div>
+
+    <!-- NASA Space Apps badge -->
+    <div class="nasa-badge glass-card" role="complementary" aria-label="NASA Space Apps Challenge information">
+      <div class="nasa-badge-content">
+        <div class="nasa-badge-icon" aria-hidden="true">🚀</div>
+        <div>
+          <h2 class="nasa-badge-title">NASA Space Apps Challenge 2026</h2>
+          <p class="nasa-badge-desc">
+            TerraEcho was created for the <strong>Earth Information Jukebox</strong> challenge,
+            exploring how Earth science data can be made more accessible and engaging through
+            interactive audio-visual experiences.
+          </p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══════════════════════════════════════════════════════
+       FIELD MAPPING MODAL
+  ══════════════════════════════════════════════════════════ -->
+  <div id="field-mapping-modal" class="modal" role="dialog" aria-modal="true" aria-labelledby="modal-title" hidden>
+    <div class="modal-backdrop" id="modal-backdrop"></div>
+    <div class="modal-panel glass-card">
+      <div class="modal-header">
+        <h2 class="modal-title" id="modal-title">Map Dataset Fields</h2>
+        <button class="modal-close" id="modal-close" aria-label="Close dialog">✕</button>
+      </div>
+      <div class="modal-body" id="modal-body">
+        <!-- Dynamically populated -->
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-ghost btn-sm" id="modal-cancel">Cancel</button>
+        <button class="btn btn-primary btn-sm" id="modal-confirm">Apply Mapping</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════════════════════════════
+       FOOTER
+  ══════════════════════════════════════════════════════════ -->
+  <footer class="footer" role="contentinfo">
+    <div class="footer-content">
+      <div class="footer-brand">
+        <span class="footer-logo">TerraEcho</span>
+        <p class="footer-tagline">Earth's Living Soundscape</p>
+      </div>
+      <div class="footer-nav" role="navigation" aria-label="Footer navigation">
+        <a class="footer-link" href="#home" data-nav="home">Home</a>
+        <a class="footer-link" href="#explorer" data-nav="explorer">Explorer</a>
+        <a class="footer-link" href="#science" data-nav="science">Science</a>
+        <a class="footer-link" href="#sources" data-nav="sources">Sources</a>
+        <a class="footer-link" href="#about" data-nav="about">About</a>
+      </div>
+      <div class="footer-meta">
+        <p>NASA Space Apps Challenge 2026 · Earth Information Jukebox</p>
+        <p>Not affiliated with or endorsed by NASA</p>
+      </div>
+    </div>
+  </footer>
+
+  <!-- JavaScript: Universal standalone bundle supporting both http:// and direct file:/// execution -->
+  <script src="js/bundle.js" defer></script>
+</body>
+</html>
